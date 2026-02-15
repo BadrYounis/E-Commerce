@@ -90,7 +90,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("productTypes");
+                    b.ToTable("ProductTypes");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProductModule.Product", b =>

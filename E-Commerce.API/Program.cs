@@ -1,3 +1,4 @@
+using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
 
@@ -19,8 +20,13 @@ namespace E_Commerce.API
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+            builder.Services.AddScoped<IDataSeeding, DataSeeding>();
 
             var app = builder.Build();
+
+            using var scope = app.Services.CreateScope();
+            var objOfDataSeeding = scope.ServiceProvider.GetRequiredService<IDataSeeding>();
+            objOfDataSeeding.SeedData();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -32,7 +38,6 @@ namespace E_Commerce.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

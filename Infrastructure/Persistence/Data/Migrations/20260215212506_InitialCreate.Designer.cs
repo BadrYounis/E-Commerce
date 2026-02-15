@@ -11,7 +11,7 @@ using Persistence.Data;
 namespace Persistence.Data.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20260215195652_InitialCreate")]
+    [Migration("20260215212506_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -93,7 +93,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("productTypes");
+                    b.ToTable("ProductTypes");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProductModule.Product", b =>

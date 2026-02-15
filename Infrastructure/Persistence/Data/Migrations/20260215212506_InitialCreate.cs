@@ -24,7 +24,7 @@ namespace Persistence.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "productTypes",
+                name: "ProductTypes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -33,7 +33,7 @@ namespace Persistence.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_productTypes", x => x.Id);
+                    table.PrimaryKey("PK_ProductTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,9 +59,9 @@ namespace Persistence.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Products_productTypes_TypeId",
+                        name: "FK_Products_ProductTypes_TypeId",
                         column: x => x.TypeId,
-                        principalTable: "productTypes",
+                        principalTable: "ProductTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -87,7 +87,7 @@ namespace Persistence.Data.Migrations
                 name: "ProductBrands");
 
             migrationBuilder.DropTable(
-                name: "productTypes");
+                name: "ProductTypes");
         }
     }
 }

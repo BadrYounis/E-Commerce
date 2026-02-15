@@ -9,7 +9,7 @@ public class StoreDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemblyReference).Assembly);
     }
-    public DbSet<Product> Products { get; set; }
     public DbSet<ProductBrand> ProductBrands { get; set; }
-    public DbSet<ProductType> productTypes { get; set; }
+    public DbSet<ProductType> ProductTypes { get; set; }
+    public DbSet<Product> Products { get; set; }
 }
