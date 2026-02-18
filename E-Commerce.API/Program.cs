@@ -2,6 +2,7 @@ using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
 using Persistence.Repositories;
+using Services;
 
 namespace E_Commerce.API
 {
@@ -23,6 +24,7 @@ namespace E_Commerce.API
             });
             builder.Services.AddScoped<IDataSeeding, DataSeeding>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddAutoMapper(cfg => { }, typeof(AssemblyReference).Assembly);
 
             var app = builder.Build();
 
