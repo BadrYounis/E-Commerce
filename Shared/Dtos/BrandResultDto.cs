@@ -1,5 +1,6 @@
 ﻿namespace Shared.Dtos;
-public record BrandResultDto(
-    int Id,
-    string Name
-);
+public record BrandResultDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+}

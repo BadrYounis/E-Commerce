@@ -1,5 +1,6 @@
 ﻿namespace Shared.Dtos;
-public record TypeResultDto(
-    int Id,
-    string Name
-);
+public record TypeResultDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+}
