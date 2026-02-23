@@ -17,4 +17,11 @@ internal class GenericRepository<TEntity, TKey>(StoreDbContext _dbContext)
         => _dbContext.Set<TEntity>().Update(entity);
     public void Delete(TEntity entity)
         => _dbContext.Set<TEntity>().Remove(entity);
+
+    #region Specifications
+    public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecifications<TEntity, TKey> specifications)
+        => await SpecificationEvaluator.CreateQuery(_dbContext.Set<TEntity>(), specifications).ToListAsync();
+    public async Task<TEntity?> GetByIdAsync(ISpecifications<TEntity, TKey> specifications)
+        => await SpecificationEvaluator.CreateQuery(_dbContext.Set<TEntity>(), specifications).FirstOrDefaultAsync(); 
+    #endregion
 }
