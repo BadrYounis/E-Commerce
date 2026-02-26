@@ -1,18 +1,19 @@
 ﻿using Domain.Entities.ProductModule;
+using Shared;
 using Shared.Enums;
 
 namespace Services.Specifications;
 internal class ProductWithBrandAndTypeSpecifications : BaseSpecifications<Product, int>
 {
     //Get All Products => Include Brands, Types (Include)
-    public ProductWithBrandAndTypeSpecifications(int? typeId, int? brandId, ProductSortingOptions sort)
-        : base(p => (!typeId.HasValue || p.TypeId == typeId)
-                 && (!brandId.HasValue || p.BrandId == brandId))
+    public ProductWithBrandAndTypeSpecifications(ProductSpecificationParameters parameters)
+        : base(p => (!parameters.TypeId.HasValue || p.TypeId == parameters.TypeId)
+                 && (!parameters.BrandId.HasValue || p.BrandId == parameters.BrandId))
     {
         AddIncludes(p => p.ProductBrand);
         AddIncludes(p => p.ProductType);
 
-        switch (sort)
+        switch (parameters.Sort)
         {
             case ProductSortingOptions.NameAsc:
                 AddOrderBy(p => p.Name);
