@@ -7,8 +7,9 @@ internal class ProductWithBrandAndTypeSpecifications : BaseSpecifications<Produc
 {
     //Get All Products => Include Brands, Types (Include)
     public ProductWithBrandAndTypeSpecifications(ProductSpecificationParameters parameters)
-        : base(p => (!parameters.TypeId.HasValue || p.TypeId == parameters.TypeId)
-                 && (!parameters.BrandId.HasValue || p.BrandId == parameters.BrandId))
+        : base(p => (!parameters.TypeId.HasValue || p.TypeId == parameters.TypeId) &&
+                    (!parameters.BrandId.HasValue || p.BrandId == parameters.BrandId) &&
+                    (string.IsNullOrEmpty(parameters.Search) || p.Name.ToLower().Contains(parameters.Search.ToLower())))
     {
         AddIncludes(p => p.ProductBrand);
         AddIncludes(p => p.ProductType);
