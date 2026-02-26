@@ -8,9 +8,9 @@ using Shared.Dtos;
 namespace Services.Implementations;
 public class ProductService(IUnitOfWork _unitOfWork, IMapper _mapper) : IProductService
 {
-    public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync()
+    public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync(int? typeId, int? brandId)
     {
-        var specifications = new ProductWithBrandAndTypeSpecifications();
+        var specifications = new ProductWithBrandAndTypeSpecifications(typeId, brandId);
         var products = await _unitOfWork.GetRepository<Product, int>().GetAllAsync(specifications);
         var productsResult = _mapper.Map<IEnumerable<ProductResultDto>>(products);
         return productsResult;

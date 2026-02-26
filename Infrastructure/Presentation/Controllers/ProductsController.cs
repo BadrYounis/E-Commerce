@@ -10,8 +10,8 @@ namespace Presentation.Controllers
     {
         //GetAllProducts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductResultDto>>> GetAllProductsAsync()
-            => Ok(await _serviceManager.ProductService.GetAllProductsAsync());
+        public async Task<ActionResult<IEnumerable<ProductResultDto>>> GetAllProductsAsync(int? typeId, int? brandId)
+            => Ok(await _serviceManager.ProductService.GetAllProductsAsync(typeId, brandId));
 
         //GetProductById   
         [HttpGet("{id:int}")]
