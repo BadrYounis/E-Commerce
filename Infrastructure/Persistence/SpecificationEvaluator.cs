@@ -9,15 +9,15 @@ internal static class SpecificationEvaluator
     {
         var query = inputQuery;
 
-        if(specifications.Criteria is not null)   //Where
+        if (specifications.Criteria is not null)   //Where
             query = query.Where(specifications.Criteria);
-        
-        if(specifications.IncludeExpressions is not null &&  specifications.IncludeExpressions.Count > 0)  //Includes
+
+        if (specifications.IncludeExpressions is not null && specifications.IncludeExpressions.Count > 0)  //Includes
         {
             //foreach (var expression in specifications.IncludeExpressions)
             //    query = query.Include(expression);
-            
-            specifications.IncludeExpressions.Aggregate(query, (currentQuery, expression) => currentQuery.Include(expression));
+
+            query = specifications.IncludeExpressions.Aggregate(query, (currentQuery, expression) => currentQuery.Include(expression));
         }
 
         return query;
