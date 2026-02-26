@@ -12,6 +12,12 @@ internal static class SpecificationEvaluator
         if (specifications.Criteria is not null)   //Where
             query = query.Where(specifications.Criteria);
 
+        if(specifications.OrderBy is not null)
+            query = query.OrderBy(specifications.OrderBy);
+
+        if(specifications.OrderByDescending is not null)
+            query = query.OrderByDescending(specifications.OrderByDescending);
+
         if (specifications.IncludeExpressions is not null && specifications.IncludeExpressions.Count > 0)  //Includes
         {
             //foreach (var expression in specifications.IncludeExpressions)
