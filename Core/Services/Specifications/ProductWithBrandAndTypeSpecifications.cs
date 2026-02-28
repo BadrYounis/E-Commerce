@@ -35,6 +35,7 @@ internal class ProductWithBrandAndTypeSpecifications : BaseSpecifications<Produc
             default:
                 break;
         }
+        ApplyPagination(parameters.PageSize, parameters.PageIndex);
     }
     //Get Product By Id => Include Brand, Type (Include).Where (Criteria) 
     public ProductWithBrandAndTypeSpecifications(int id) : base(p => p.Id == id)

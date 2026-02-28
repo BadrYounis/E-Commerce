@@ -10,12 +10,16 @@ using Shared.Enums;
 namespace Services.Implementations;
 public class ProductService(IUnitOfWork _unitOfWork, IMapper _mapper) : IProductService
 {
-    public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync(ProductSpecificationParameters parameters)
+    public async Task<PaginatedResult<ProductResultDto>> GetAllProductsAsync(ProductSpecificationParameters parameters)
     {
+        var productRepo = _unitOfWork.GetRepository<Product, int>();
         var specifications = new ProductWithBrandAndTypeSpecifications(parameters);
-        var products = await _unitOfWork.GetRepository<Product, int>().GetAllAsync(specifications);
+        var products = await productRepo.GetAllAsync(specifications);
         var productsResult = _mapper.Map<IEnumerable<ProductResultDto>>(products);
-        return productsResult;
+        var pageSize = productsResult.Count();
+        var countSpecifications = new ProductCountSpecifications(parameters);
+        var totalCount = await productRepo.CountAsync(countSpecifications);
+        return new PaginatedResult<ProductResultDto>(parameters.PageIndex, pageSize, totalCount, productsResult);
     }
     public async Task<ProductResultDto> GetProductByIdAsync(int id)
     {

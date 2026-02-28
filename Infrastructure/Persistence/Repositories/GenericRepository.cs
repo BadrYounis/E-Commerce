@@ -22,6 +22,8 @@ internal class GenericRepository<TEntity, TKey>(StoreDbContext _dbContext)
     public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecifications<TEntity, TKey> specifications)
         => await SpecificationEvaluator.CreateQuery(_dbContext.Set<TEntity>(), specifications).ToListAsync();
     public async Task<TEntity?> GetByIdAsync(ISpecifications<TEntity, TKey> specifications)
-        => await SpecificationEvaluator.CreateQuery(_dbContext.Set<TEntity>(), specifications).FirstOrDefaultAsync(); 
+        => await SpecificationEvaluator.CreateQuery(_dbContext.Set<TEntity>(), specifications).FirstOrDefaultAsync();
+    public async Task<int> CountAsync(ISpecifications<TEntity, TKey> specifications)
+        => await SpecificationEvaluator.CreateQuery(_dbContext.Set<TEntity>(), specifications).CountAsync();
     #endregion
 }
