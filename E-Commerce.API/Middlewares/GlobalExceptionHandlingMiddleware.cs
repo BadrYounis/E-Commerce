@@ -1,4 +1,5 @@
-﻿using Shared.ErrorModels;
+﻿using Domain.Exceptions;
+using Shared.ErrorModels;
 
 namespace E_Commerce.API.Middlewares;
 public class GlobalExceptionHandlingMiddleware
@@ -25,7 +26,12 @@ public class GlobalExceptionHandlingMiddleware
     private async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
         //1) Change StatusCode 
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        //context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.StatusCode = ex switch
+        {
+            NotFoundException => StatusCodes.Status404NotFound,
+            (_) => StatusCodes.Status500InternalServerError
+        };
         //2) Change Content Type
         context.Response.ContentType = "application/json";
         //3) Write Response Body
