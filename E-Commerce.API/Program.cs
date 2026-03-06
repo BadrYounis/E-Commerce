@@ -1,5 +1,7 @@
 using Domain.Contracts;
+using E_Commerce.API.Factories;
 using E_Commerce.API.Middlewares;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
 using Persistence.Repositories;
@@ -19,6 +21,10 @@ namespace E_Commerce.API
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = ApiResponseFactory.CustomValidationErrorResponse;
+            });
 
             //Infrastructure Services
             builder.Services.AddDbContext<StoreDbContext>(options =>
