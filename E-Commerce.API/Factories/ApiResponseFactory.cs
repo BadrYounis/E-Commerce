@@ -7,7 +7,7 @@ public class ApiResponseFactory
     public static IActionResult CustomValidationErrorResponse(ActionContext context)
     {
         var errors = context.ModelState
-            .Where(error => error.Value?.Errors.Any() ==true)
+            .Where(error => error.Value?.Errors.Any() == true)
             .Select(error => new ValidationError
             {
                 Field = error.Key,
