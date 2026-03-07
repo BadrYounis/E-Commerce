@@ -1,4 +1,5 @@
 using Domain.Contracts;
+using E_Commerce.API.Extensions;
 using E_Commerce.API.Factories;
 using E_Commerce.API.Middlewares;
 using Microsoft.AspNetCore.Mvc;
@@ -15,41 +16,30 @@ namespace E_Commerce.API
     {
         public async static Task Main(string[] args)
         {
+            #region DI Container
             var builder = WebApplication.CreateBuilder(args);
 
             //WebApi Services
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = ApiResponseFactory.CustomValidationErrorResponse;
-            });
+            builder.Services.AddWebApiServices();
 
             //Infrastructure Services
-            builder.Services.AddDbContext<StoreDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-            builder.Services.AddScoped<IDataSeeding, DataSeeding>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddInfrastructureServices(builder.Configuration);
 
             //Core Services
-            builder.Services.AddAutoMapper(cfg => { }, typeof(AssemblyReference).Assembly);
-            builder.Services.AddScoped<IServiceManager, ServiceManager>();
+            builder.Services.AddCoreServices();
+            #endregion
 
+            #region Pipelines (Middlewares)
             var app = builder.Build();
 
-            using var scope = app.Services.CreateScope();
-            var objOfDataSeeding = scope.ServiceProvider.GetRequiredService<IDataSeeding>();
-            await objOfDataSeeding.SeedDataAsync();
+            await app.SeedDatabaseAsync();
 
-            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+            app.UseExceptionHandlingMiddlewares();
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddlewares();
             }
 
             app.UseHttpsRedirection();
@@ -60,7 +50,8 @@ namespace E_Commerce.API
 
             app.MapControllers();
 
-            app.Run();
+            app.Run(); 
+            #endregion
         }
     }
 }
