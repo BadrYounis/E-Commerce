@@ -3,14 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Abstraction.Contracts;
 using Shared;
 using Shared.Dtos.ProductModule;
-using Shared.Enums;
 using Shared.ErrorModels;
 
 namespace Presentation.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController(IServiceManager _serviceManager) : ControllerBase
+    public class ProductsController(IServiceManager _serviceManager) : ApiController
     {
         //GetAllProducts
         [HttpGet]
@@ -19,9 +16,6 @@ namespace Presentation.Controllers
 
         //GetProductById   
         [ProducesResponseType(typeof(ProductResultDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ErrorDetails), StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(typeof(ErrorDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ProductResultDto>> GetProductByIdAsync(int id)
             => Ok(await _serviceManager.ProductService.GetProductByIdAsync(id));
