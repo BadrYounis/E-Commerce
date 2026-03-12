@@ -1,4 +1,4 @@
-﻿namespace Shared.Dtos;
+﻿namespace Shared.Dtos.ProductModule;
 public record ProductResultDto
 {
     public int Id { get; set; }

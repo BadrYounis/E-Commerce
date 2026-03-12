@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Entities.ProductModule;
 using Microsoft.Extensions.Configuration;
-using Shared.Dtos;
+using Shared.Dtos.ProductModule;
 
 namespace Services.MappingProfiles;
 internal class PictureUrlResolver(IConfiguration _configuration) : IValueResolver<Product, ProductResultDto, string>

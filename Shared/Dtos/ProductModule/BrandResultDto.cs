@@ -1,5 +1,5 @@
-﻿namespace Shared.Dtos;
-public record TypeResultDto
+﻿namespace Shared.Dtos.ProductModule;
+public record BrandResultDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

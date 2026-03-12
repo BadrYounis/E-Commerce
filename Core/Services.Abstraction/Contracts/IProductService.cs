@@ -1,5 +1,5 @@
 ﻿using Shared;
-using Shared.Dtos;
+using Shared.Dtos.ProductModule;
 using Shared.Enums;
 
 namespace Services.Abstraction.Contracts;
