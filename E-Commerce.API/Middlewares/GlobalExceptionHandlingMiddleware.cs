@@ -39,21 +39,28 @@ public class GlobalExceptionHandlingMiddleware
     }
     private async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
-        //1) Change StatusCode 
-        //context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        var response = new ErrorDetails
+        {
+            ErrorMessage = ex.Message
+        };
+
         context.Response.StatusCode = ex switch
         {
             NotFoundException => StatusCodes.Status404NotFound,
+            UnauthorizedException => StatusCodes.Status401Unauthorized,
+            ValidationException validationException => HandleValidationException(validationException, response),
             (_) => StatusCodes.Status500InternalServerError
         };
-        //2) Change Content Type
-        context.Response.ContentType = "application/json";
-        //3) Write Response Body
-        var response = new ErrorDetails
-        {
-            StatusCode = context.Response.StatusCode,
-            ErrorMessage = ex.Message
-        }.ToString();
-        await context.Response.WriteAsync(response);
+
+        response.StatusCode = context.Response.StatusCode;
+
+        await context.Response.WriteAsync(response.ToString());
+    }
+    private int HandleValidationException(ValidationException validationException, ErrorDetails response)
+    {
+        response.Errors = validationException.Errors;
+        return StatusCodes.Status400BadRequest;
     }
 }
