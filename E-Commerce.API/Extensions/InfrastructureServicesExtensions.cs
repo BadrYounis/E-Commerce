@@ -1,6 +1,7 @@
 ﻿using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
+using Persistence.Identity;
 using Persistence.Repositories;
 using StackExchange.Redis;
 
@@ -12,6 +13,10 @@ public static class InfrastructureServicesExtensions
         services.AddDbContext<StoreDbContext>(options =>
         {
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        });
+        services.AddDbContext<IdentityStoreDbContext>(options =>
+        {
+            options.UseSqlServer(configuration.GetConnectionString("IdentityConnection"));
         });
         services.AddScoped<IDataSeeding, DataSeeding>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
