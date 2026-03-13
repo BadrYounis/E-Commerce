@@ -1,4 +1,6 @@
 ﻿using Domain.Contracts;
+using Domain.Entities.IdentityModule;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
 using Persistence.Identity;
@@ -24,6 +26,15 @@ public static class InfrastructureServicesExtensions
         {
             return ConnectionMultiplexer.Connect(configuration.GetConnectionString("RedisConnection")!);
         });
+        services.AddIdentity<User, IdentityRole>(options =>
+        {
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.User.RequireUniqueEmail = true;
+        })
+            .AddEntityFrameworkStores<IdentityStoreDbContext>();
         services.AddScoped<IBasketRepository, BasketRepository>();
         return services;
     }

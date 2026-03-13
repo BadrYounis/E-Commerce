@@ -1,8 +1,13 @@
 ﻿using Domain.Contracts;
+using Domain.Entities.IdentityModule;
+using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 
 namespace Persistence.Data;
-public class DataSeeding(StoreDbContext _dbContext) : IDataSeeding
+public class DataSeeding(
+    StoreDbContext _dbContext,
+    RoleManager<IdentityRole> _roleManager,
+    UserManager<User> _userManager) : IDataSeeding
 {
     public async Task SeedDataAsync()
     {
@@ -41,6 +46,45 @@ public class DataSeeding(StoreDbContext _dbContext) : IDataSeeding
         catch (Exception ex)
         {
             //Handle Exception
+        }
+    }
+    public async Task SeedIdentityDataAsync()
+    {
+        try
+        {
+            //1) Seed roles [Admin, SuperAdmin]
+            if (!_roleManager.Roles.Any())
+            {
+                await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                await _roleManager.CreateAsync(new IdentityRole("SuperAdmin"));
+            }
+            //2) Seed users [AdminUser, SuperAdminUser]
+            if (!_userManager.Users.Any())
+            {
+                var adminUser = new User()
+                {
+                    DisplayName = "Admin",
+                    UserName = "Admin",
+                    Email = "Admin@gmail.com",
+                    PhoneNumber = "01005068014"
+                };
+                var superAdminUser = new User()
+                {
+                    DisplayName = "SuperAdmin",
+                    UserName = "SuperAdmin",
+                    Email = "SuperAdmin@gmail.com",
+                    PhoneNumber = "01017151157"
+                };
+                await _userManager.CreateAsync(adminUser, "P@ssw0rd");
+                await _userManager.CreateAsync(superAdminUser, "Pa$$w0rd");
+                //3) Assign roles to users
+                await _userManager.AddToRoleAsync(adminUser, "Admin");
+                await _userManager.AddToRoleAsync(superAdminUser, "SuperAdmin");
+            }
+        }
+        catch (Exception)
+        {
+            throw;
         }
     }
 }

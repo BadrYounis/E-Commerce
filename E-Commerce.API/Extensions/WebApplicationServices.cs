@@ -9,6 +9,7 @@ public static class WebApplicationServices
         using var scope = app.Services.CreateScope();
         var objOfDataSeeding = scope.ServiceProvider.GetRequiredService<IDataSeeding>();
         await objOfDataSeeding.SeedDataAsync();
+        await objOfDataSeeding.SeedIdentityDataAsync();
         return app;
     }
     public static WebApplication UseExceptionHandlingMiddlewares(this WebApplication app)
