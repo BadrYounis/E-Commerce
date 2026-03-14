@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Services.Abstraction.Contracts;
 using Shared.Dtos.BasketModule;
 
 namespace Presentation.Controllers;
+
+[Authorize]
 public class BasketController(IServiceManager _serviceManager) : ApiController
 {
     //Get  BaseUrl/api/Basket?id=Basket01

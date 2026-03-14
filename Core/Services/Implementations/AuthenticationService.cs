@@ -1,15 +1,17 @@
 ﻿using Domain.Entities.IdentityModule;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Services.Abstraction.Contracts;
+using Shared.Common;
 using Shared.Dtos.IdentityModule;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
 namespace Services.Implementations;
-public class AuthenticationService(UserManager<User> _userManager) : IAuthenticationService
+public class AuthenticationService(UserManager<User> _userManager, IOptions<JwtOptions> _options) : IAuthenticationService
 {
     public async Task<UserResultDto> LoginAsync(LoginDto loginDto)
     {
@@ -42,6 +44,7 @@ public class AuthenticationService(UserManager<User> _userManager) : IAuthentica
     }
     public async Task<string> CreateTokenAsync(User user)
     {
+        var jwtOptions = _options.Value;
         var claims = new List<Claim>
         {
             new (ClaimTypes.Name, user.DisplayName),
@@ -52,15 +55,15 @@ public class AuthenticationService(UserManager<User> _userManager) : IAuthentica
             claims.Add(new Claim(ClaimTypes.Role, role));
 
         var signInCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes("4ce62a6c5e53b56620cc09c0bde8be2b515c83359379a3d4ea0dfb8b83c4e519")),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
             SecurityAlgorithms.HmacSha256
         );
 
         var token = new JwtSecurityToken(
-            issuer: "https://localhost:7162",
-            audience: "Angular Project",
+            issuer: jwtOptions.Issuer,
+            audience: jwtOptions.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddDays(30),
+            expires: DateTime.UtcNow.AddDays(jwtOptions.ExpirationInDays),
             signingCredentials: signInCredentials
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
