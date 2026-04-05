@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Shared.Dtos;
+namespace Shared.Dtos.BasketModule;
 public record BasketItemDto
 {
     public int Id { get; init; }

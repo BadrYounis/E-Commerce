@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Domain.Entities.BasketModule;
-using Shared.Dtos;
 using Shared.Dtos.BasketModule;
 
 namespace Services.MappingProfiles;
