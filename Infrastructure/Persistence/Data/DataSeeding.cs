@@ -1,5 +1,6 @@
 ﻿using Domain.Contracts;
 using Domain.Entities.IdentityModule;
+using Domain.Entities.OrderModule;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 
@@ -40,6 +41,13 @@ public class DataSeeding(
                 var products =await JsonSerializer.DeserializeAsync<List<Product>>(productsData);
                 if (products is not null && products.Any())
                     await _dbContext.Products.AddRangeAsync(products);
+            }
+            if (!_dbContext.DeliveryMethods.Any())
+            {
+                var deliveryMethodsData = File.OpenRead("..\\Infrastructure\\Persistence\\Data\\DataSeed\\delivery.json");
+                var deliveryMethods = await JsonSerializer.DeserializeAsync<List<DeliveryMethod>>(deliveryMethodsData);
+                if (deliveryMethods is not null && deliveryMethods.Any())
+                    await _dbContext.DeliveryMethods.AddRangeAsync(deliveryMethods);
             }
             await _dbContext.SaveChangesAsync();
         }
