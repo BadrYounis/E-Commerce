@@ -5,9 +5,17 @@ using Microsoft.OpenApi.Models;
 namespace E_Commerce.API.Extensions;
 public static class WebApiServicesExtensions
 {
-    public static IServiceCollection AddWebApiServices(this IServiceCollection services)
+    public static IServiceCollection AddWebApiServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers();
+        services.AddCors(options =>
+        {
+            options.AddPolicy("corsPolicy", builder =>
+            {
+                builder.AllowAnyHeader().AllowAnyMethod()
+                .WithOrigins(configuration.GetSection("URLS")["FrontUrl"]!);
+            });
+        });
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.InvalidModelStateResponseFactory = ApiResponseFactory.CustomValidationErrorResponse;

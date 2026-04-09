@@ -31,7 +31,7 @@ public class OrderService(IMapper _mapper, IBasketRepository _basketRepository, 
     }
     public async Task<OrderResult> CreateOrderAsync(OrderRequest orderRequest, string userEmail)
     {
-        var address = _mapper.Map<Address>(orderRequest.ShippingAddress);
+        var address = _mapper.Map<Address>(orderRequest.ShipToAddress);
         var basket = await GetBasketAsync(orderRequest.BasketId);
         var orderItems = await GetOrderItemsAsync(basket);
         var deliveryMethod = await GetMethodAsync(orderRequest.DeliveryMethodId);
@@ -50,7 +50,7 @@ public class OrderService(IMapper _mapper, IBasketRepository _basketRepository, 
     private async Task<List<OrderItem>> GetOrderItemsAsync(CustomerBasket basket)
     {
         var orderItems = new List<OrderItem>();
-        foreach (var item in basket.BasketItems)
+        foreach (var item in basket.Items)
         {
             var product = await _unitOfWork.GetRepository<Product, int>()
                 .GetByIdAsync(item.Id)

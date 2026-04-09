@@ -5,7 +5,7 @@ public record OrderResult
     public string UserEmail { get; init; } = string.Empty;
     public AddressDto ShippingAddress { get; init; }
     public ICollection<OrderItemDto> OrderItems { get; init; } = [];
-    public string PaymentStatus { get; init; } = string.Empty;
+    public string Status { get; init; } = string.Empty;
     public string DeliveryMethod { get; init; }
     public int? DeliveryMethodId { get; init; }
     public decimal SubTotal { get; init; }

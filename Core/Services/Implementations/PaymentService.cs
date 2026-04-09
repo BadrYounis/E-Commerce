@@ -37,7 +37,7 @@ public class PaymentService(IConfiguration _configuration,
     {
 
         //3] Validate items price ==> [basket.item.price = product.price] == > product from db
-        foreach (var item in basket.BasketItems)
+        foreach (var item in basket.Items)
         {
             var product = await _unitOfWork.GetRepository<Product, int>().GetByIdAsync(item.Id)
                 ?? throw new ProductNotFoundException(item.Id);
@@ -55,7 +55,7 @@ public class PaymentService(IConfiguration _configuration,
     {
         //5] Total ==> [SubTotal + ShippingPrice] ==> cent ==> * 100 ==> Long
         //         ==> (long)([basket.items.q * basket.items.price] + shippingPrice[DeliveryMethod.Price]) * 100
-        return (long)(basket.BasketItems.Sum(i => i.Quantity * i.Price) + basket.ShippingPrice!) * 100;
+        return (long)(basket.Items.Sum(i => i.Quantity * i.Price) + basket.ShippingPrice!) * 100;
     }
     private async Task CreationOrUpdatePaymentIntentAsync(CustomerBasket basket, long amount)
     {
