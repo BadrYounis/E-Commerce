@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
+using Domain.Entities.BasketModule;
 using Domain.Entities.OrderModule;
 using Domain.Exceptions;
 using Microsoft.Extensions.Configuration;
@@ -16,14 +17,21 @@ public class PaymentService(IConfiguration _configuration,
 {
     public async Task<BasketDto> CreateOrUpdatePaymentIntentAsync(string basketId)
     {
-        //0] Install stripe.net   [Done]
-
-        //1] Set up key [secret key] ==> stripe key
         StripeConfiguration.ApiKey = _configuration.GetSection("StripeSettings")["SecretKey"];
-
-        //2] Get basket [by basketId]
-        var basket = await _basketRepository.GetBasketAsync(basketId)
+        var basket = await GetBasketAsync(basketId);
+        await ValidateBasketAsync(basket);
+        var amount = CalculateTotalAsync(basket);
+        await CreationOrUpdatePaymentIntentAsync(basket, amount);
+        await _basketRepository.CreateOrUpdateBasketAsync(basket);
+        return _mapper.Map<BasketDto>(basket);
+    }
+    private async Task<CustomerBasket> GetBasketAsync(string basketId)
+    {
+        return await _basketRepository.GetBasketAsync(basketId)
             ?? throw new BasketNotFoundException(basketId);
+    }
+    private async Task ValidateBasketAsync(CustomerBasket basket)
+    {
 
         //3] Validate items price ==> [basket.item.price = product.price] == > product from db
         foreach (var item in basket.BasketItems)
@@ -39,11 +47,15 @@ public class PaymentService(IConfiguration _configuration,
             .GetByIdAsync(basket.DeliveryMethodId.Value)
             ?? throw new DeliveryMethodNotFoundException(basket.DeliveryMethodId.Value);
         basket.ShippingPrice = deliveryMethod.Price;
-
+    }
+    private long CalculateTotalAsync(CustomerBasket basket)
+    {
         //5] Total ==> [SubTotal + ShippingPrice] ==> cent ==> * 100 ==> Long
         //         ==> (long)([basket.items.q * basket.items.price] + shippingPrice[DeliveryMethod.Price]) * 100
-        var amount = (long)(basket.BasketItems.Sum(i => i.Quantity * i.Price) + basket.ShippingPrice) * 100;
-
+        return (long)(basket.BasketItems.Sum(i => i.Quantity * i.Price) + basket.ShippingPrice!) * 100;
+    }
+    private async Task CreationOrUpdatePaymentIntentAsync(CustomerBasket basket, long amount)
+    {
         //6] Create or update paymentIntentId
         var stripeService = new PaymentIntentService();
         if (string.IsNullOrEmpty(basket.PaymentIntentId))
@@ -68,15 +80,9 @@ public class PaymentService(IConfiguration _configuration,
             //4) Admin change delivery method price
             var options = new PaymentIntentUpdateOptions()
             {
-                Amount = amount  
+                Amount = amount
             };
             await stripeService.UpdateAsync(basket.PaymentIntentId, options);
         }
-
-        //7] Save changes [Update] Basket
-        await _basketRepository.CreateOrUpdateBasketAsync(basket);
-
-        //8] Map to basketDto ==> return
-        return _mapper.Map<BasketDto>(basket);
     }
 }
