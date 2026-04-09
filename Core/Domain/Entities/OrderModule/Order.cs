@@ -6,7 +6,12 @@ public class Order : BaseEntity<Guid>
     {
         
     }
-    public Order(string userEmail, ShippingAddress shippingAddress, ICollection<OrderItem> orderItems, DeliveryMethod deliveryMethod, decimal subTotal)
+    public Order(string userEmail,
+        ShippingAddress shippingAddress,
+        ICollection<OrderItem> orderItems,
+        DeliveryMethod deliveryMethod,
+        decimal subTotal,
+        string paymentIntentId)
     {
         Id = Guid.NewGuid();
         UserEmail = userEmail;
@@ -14,6 +19,7 @@ public class Order : BaseEntity<Guid>
         OrderItems = orderItems;
         DeliveryMethod = deliveryMethod;
         SubTotal = subTotal;
+        PaymentIntentId = paymentIntentId;
     }
     public string UserEmail { get; set; } = string.Empty;
     public ShippingAddress ShippingAddress { get; set; }
