@@ -18,10 +18,13 @@ public class PaymentService(IConfiguration _configuration,
     public async Task<BasketDto> CreateOrUpdatePaymentIntentAsync(string basketId)
     {
         StripeConfiguration.ApiKey = _configuration.GetSection("StripeSettings")["SecretKey"];
+
         var basket = await GetBasketAsync(basketId);
         await ValidateBasketAsync(basket);
+
         var amount = CalculateTotalAsync(basket);
         await CreationOrUpdatePaymentIntentAsync(basket, amount);
+
         await _basketRepository.CreateOrUpdateBasketAsync(basket);
         return _mapper.Map<BasketDto>(basket);
     }
