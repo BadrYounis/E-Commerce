@@ -5,6 +5,7 @@ using Domain.Entities.OrderModule;
 using Domain.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Services.Abstraction.Contracts;
+using Services.Specifications;
 using Shared.Dtos.BasketModule;
 using Stripe;
 using Product = Domain.Entities.ProductModule.Product;
@@ -15,6 +16,7 @@ public class PaymentService(IConfiguration _configuration,
     IUnitOfWork _unitOfWork,
     IMapper _mapper) : IPaymentService
 {
+    #region CreateOrUpdatePaymentIntentAsync
     public async Task<BasketDto> CreateOrUpdatePaymentIntentAsync(string basketId)
     {
         StripeConfiguration.ApiKey = _configuration.GetSection("StripeSettings")["SecretKey"];
@@ -88,4 +90,55 @@ public class PaymentService(IConfiguration _configuration,
             await stripeService.UpdateAsync(basket.PaymentIntentId, options);
         }
     }
+    #endregion
+
+    #region StripeWebhook
+    public async Task UpdatePaymentStatusAsync(string json, string signatureHeader)
+    {
+        string endpointSecret = _configuration.GetSection("StripeSettings")["EndPointSecret"];
+
+        var stripeEvent = EventUtility.ParseEvent(json, throwOnApiVersionMismatch: false);
+
+        stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, endpointSecret, throwOnApiVersionMismatch: false);
+        var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+
+        if (stripeEvent.Type == EventTypes.PaymentIntentSucceeded)
+        {
+            //Change Order Payment Status => PaymentReceived
+            await UpdatePaymentStatusReceivedAsync(paymentIntent.Id);
+        }
+        else if (stripeEvent.Type == EventTypes.PaymentIntentPaymentFailed)
+        {
+            //Change Order Payment Status => PaymentFailed
+            await UpdatePaymentStatusFailedAsync(paymentIntent.Id);
+        }
+        else
+        {
+            // Unexpected event type
+            Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+        }
+    }
+    private async Task UpdatePaymentStatusReceivedAsync(string paymentIntentId)
+    {
+        var orderRepo = _unitOfWork.GetRepository<Order, Guid>();
+        var order = await orderRepo.GetByIdAsync(new OrderWithPaymentIntentIdSpecifications(paymentIntentId));
+        if (order is not null)
+        {
+            order.PaymentStatus = OrderPaymentStatus.PaymentReceived;
+            orderRepo.Update(order);
+            await _unitOfWork.SaveChangesAsync();
+        }
+    }
+    private async Task UpdatePaymentStatusFailedAsync(string paymentIntentId)
+    {
+        var orderRepo = _unitOfWork.GetRepository<Order, Guid>();
+        var order = await orderRepo.GetByIdAsync(new OrderWithPaymentIntentIdSpecifications(paymentIntentId));
+        if (order is not null)
+        {
+            order.PaymentStatus = OrderPaymentStatus.PaymentFailed;
+            orderRepo.Update(order);
+            await _unitOfWork.SaveChangesAsync();
+        }
+    } 
+    #endregion
 }
