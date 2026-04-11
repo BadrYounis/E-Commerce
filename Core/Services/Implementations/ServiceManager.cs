@@ -13,7 +13,7 @@ public class ServiceManager(IUnitOfWork _unitOfWork,
     IBasketRepository _basketRepo,
     UserManager<User> _userManager,
     IOptions<JwtOptions> _options,
-    IConfiguration _configuration) : IServiceManager
+    IConfiguration _configuration) /*: IServiceManager*/
 {
     private readonly Lazy<IProductService> _productService
         = new Lazy<IProductService>(() => new ProductService(_unitOfWork, _mapper));
