@@ -16,6 +16,7 @@ public static class CoreServicesExtensions
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<ICacheService, CacheService>();
 
         services.AddScoped<Func<IProductService>>(provider =>
             () => provider.GetRequiredService<IProductService>()
@@ -32,6 +33,10 @@ public static class CoreServicesExtensions
         services.AddScoped<Func<IPaymentService>>(provider =>
             () => provider.GetRequiredService<IPaymentService>()
         );
+        services.AddScoped<Func<ICacheService>>(provider =>
+            () => provider.GetRequiredService<ICacheService>()
+        );
+
         services.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
         return services;
     }
