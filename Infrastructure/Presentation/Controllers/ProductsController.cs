@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Attributes;
 using Services.Abstraction.Contracts;
 using Shared;
 using Shared.Dtos.ProductModule;
@@ -10,6 +11,7 @@ namespace Presentation.Controllers
     public class ProductsController(IServiceManager _serviceManager) : ApiController
     {
         //GetAllProducts
+        [RedisCache]
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<ProductResultDto>>> GetAllProductsAsync([FromQuery] ProductSpecificationParameters parameters)
             => Ok(await _serviceManager.ProductService.GetAllProductsAsync(parameters));
