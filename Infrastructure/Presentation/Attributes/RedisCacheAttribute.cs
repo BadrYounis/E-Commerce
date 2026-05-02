@@ -18,7 +18,7 @@ internal class RedisCacheAttribute(int timeToLiveInSeconds = 120) : ActionFilter
             context.Result = new ContentResult
             {
                 Content = result,
-                ContentType = "application/json1",
+                ContentType = "application/json",
                 StatusCode = StatusCodes.Status200OK
             };
             return;

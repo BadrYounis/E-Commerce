@@ -4,7 +4,6 @@ using Presentation.Attributes;
 using Services.Abstraction.Contracts;
 using Shared;
 using Shared.Dtos.ProductModule;
-using Shared.ErrorModels;
 
 namespace Presentation.Controllers
 {
